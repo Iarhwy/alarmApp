@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Будильник</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jura:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="alarm">
+    <div class="alarm__wrapper">
+      <div class="alarm__display">00:00:00</div>
+      <div class="alarm__container">
+        <div class="alarm__inputs">
+          <input type="number" id="alarm__hour" placeholder="00" min="0" max="23"/>
+          <input type="number" id="alarm__min" placeholder="00" min="0" max="59"/>
+        </div>
+        <button id="alarm__set">Add Alarm</button>
+        <div class="alarm__wrapper-active"></div>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
