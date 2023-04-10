@@ -3,7 +3,7 @@ let alTimer = document.querySelector('.alarm__display'),
     alSet = document.getElementById('alarm__set'),
     alHourInp = document.getElementById('alarm__hour'),
     alMinInp = document.getElementById('alarm__min'),
-    alArray = [],
+    alArray = localStorage.getItem('alarms') ? JSON.parse(localStorage.getItem('alarms')) : [],
     alSound = new Audio('./sounds/alarm.mp3')
 
 let initHour = 0,
@@ -23,6 +23,8 @@ const parseObj = (param, val) => {
             alObject = al
             objIndex = i
             return false
+        } else {
+            return
         }
     })
     return [exists, alObject, objIndex]
@@ -36,10 +38,13 @@ function timer() {
 
     alArray.forEach((al, i) => {
         if (al.isActive) {
+            
             if (`${al.alHour}:${al.alMin}` === `${hours}:${mins}`) {
                 alSound.play()
                 alSound.loop = true
             }
+        } else {
+            return
         }
     })
 }
@@ -67,7 +72,7 @@ alMinInp.addEventListener('input', () => {
     let value = parseInt(alMinInp.value);
     if (value > 59) {
         alMinInp.value = alMinInp.value.slice(0, -2);
-    } 
+    }
 })
 
 const alCreate = (alObj) => {
@@ -83,9 +88,15 @@ const alCreate = (alObj) => {
     $alCheck.addEventListener('click', e => {
         if (e.target.checked) {
             alStart(e)
+            e.target.setAttribute('checked', '')
+            localStorage.setItem('alarms', JSON.stringify(alArray))
         } else {
             alStop(e)
         }
+
+        // if (e.target.checked) {
+        //     e.target.setAttribute('checked', '')
+        // }
     })
 
     let $alDel = document.createElement('button'),
@@ -99,20 +110,38 @@ const alCreate = (alObj) => {
     alActive.append($alSubContainer)
 }
 
+let add = () => {
+    let parsedArr = JSON.parse(localStorage.getItem('alarms'))
+        // inp = document.getElementById('')
+
+    parsedArr.forEach(e => {
+        let alObj = {}
+        alObj.id = e.id
+        alObj.alHour = e.alHour
+        alObj.alMin = e.alMin
+        alObj.isActive = e.isActive
+        alCreate(alObj)
+    })
+}
+
+let alIdRandom = () => {
+    alIndex += +(((Math.random() * 100)).toFixed(3).replace('.', ''))
+}
+
 alSet.addEventListener('click', () => {
-    alIndex += 1
+    alIdRandom()
 
     let alObj = {}
     alObj.id = `${alIndex}_${alHourInp.value}_${alMinInp.value}`
-    if (alHourInp.value !== '00') {
-        alObj.alHour = alHourInp.value
-        alObj.alMin = alMinInp.value
-        alObj.isActive = false
-        alArray.push(alObj)
-        alCreate(alObj)
-        alHourInp.value = appendZero(initHour)
-        alMinInp.value = appendZero(initMin)
-    }
+    alObj.alHour = alHourInp.value
+    alObj.alMin = alMinInp.value
+    alObj.isActive = false
+    alArray.push(alObj)
+    localStorage.setItem('alarms', JSON.stringify(alArray))
+    alCreate(alObj)
+    alHourInp.value = appendZero(initHour)
+    alMinInp.value = appendZero(initMin)
+    console.log(alArray)
 })
 
 const alStart = e => {
@@ -120,6 +149,7 @@ const alStart = e => {
         [exists, obj, index] = parseObj('id', searchId)
         if (exists) {
             alArray[index].isActive = true
+            localStorage.setItem('alarms', JSON.stringify(alArray))
         }
 }
 
@@ -138,15 +168,20 @@ const alDelete = e => {
         if (exists) {
             e.target.parentElement.parentElement.remove()
             alArray.splice(index, 1)
+            localStorage.setItem('alarms', JSON.stringify(alArray))
         }
 }
+
+console.log(alArray)
 
 window.onload = () => {
     setInterval(timer)
     initHour = 0
     initMin = 0
     alIndex = 0
-    alArray = [];
+    // alArray = [];
+    alArray.length > 0 ? add() : []
+    console.log(alArray)
     alHourInp.value = appendZero(initHour)
     alMinInp.value = appendZero(initMin)
 }
