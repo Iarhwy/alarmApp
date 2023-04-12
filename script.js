@@ -5,6 +5,7 @@ let alTimer = document.querySelector('.alarm__display'),
     alMinInp = document.getElementById('alarm__min'),
     alArray = localStorage.getItem('alarms') ? JSON.parse(localStorage.getItem('alarms')) : [],
     alSound = new Audio('./sounds/alarm.mp3')
+    inpArr = [];
 
 let initHour = 0,
     initMin = 0,
@@ -32,19 +33,20 @@ const parseObj = (param, val) => {
 
 function timer() {
     let date = new Date(),
-        [hours, mins, secs] = [appendZero(date.getHours()), appendZero(date.getMinutes()), appendZero(date.getSeconds())];
+        [hours, mins, secs] = [
+            appendZero(date.getHours()), 
+            appendZero(date.getMinutes()), 
+            appendZero(date.getSeconds())
+        ];
 
     alTimer.innerHTML = `${hours}:${mins}:${secs}`
 
     alArray.forEach((al, i) => {
         if (al.isActive) {
-            
             if (`${al.alHour}:${al.alMin}` === `${hours}:${mins}`) {
-                alSound.play()
+                alSound.play();
                 alSound.loop = true
             }
-        } else {
-            return
         }
     })
 }
@@ -61,18 +63,14 @@ alHourInp.addEventListener('input', () => {
     alHourInp.value = inpCheck(alHourInp.value)
     alHourInp.value = alHourInp.value.substring(0, 2)
     let value = parseInt(alHourInp.value);
-    if(value > 23) {
-        alHourInp.value = alHourInp.value.slice(0, -2);
-    }
+    if (value > 23) alHourInp.value = alHourInp.value.slice(0, -2)
 })
 
 alMinInp.addEventListener('input', () => {
     alMinInp.value = inpCheck(alMinInp.value)
     alMinInp.value = alMinInp.value.substring(0, 2)
     let value = parseInt(alMinInp.value);
-    if (value > 59) {
-        alMinInp.value = alMinInp.value.slice(0, -2);
-    }
+    if (value > 59) alMinInp.value = alMinInp.value.slice(0, -2)
 })
 
 const alCreate = (alObj) => {
@@ -85,23 +83,38 @@ const alCreate = (alObj) => {
 
     let $alCheck = document.createElement('input')
     $alCheck.setAttribute('type', 'checkbox')
-    $alCheck.addEventListener('click', e => {
+    $alCheck.setAttribute('class', 'checkbox')
+    $alCheck.addEventListener('click', e => { 
         if (e.target.checked) {
             alStart(e)
+            // e.target.setAttribute('class', 'checked')
             e.target.setAttribute('checked', '')
-            localStorage.setItem('alarms', JSON.stringify(alArray))
         } else {
             alStop(e)
-        }
-
-        // if (e.target.checked) {
-        //     e.target.setAttribute('checked', '')
-        // }
+            // e.target.removeAttribute('class', 'checked')
+            e.target.removeAttribute('checked')
+        } 
     })
+
+    // localStorage.getItem('checkStatus') == 'true' 
+    //     ? $alCheck.checked = true
+    //     : $alCheck.checked = false
+
+    // function savefunction(){
+    //     var checkboxes = document.querySelectorAll('.products');
+    //     for (var i = 0; i < checkboxes.length; i  = 1) {
+    //       if (checkboxes[i].checked) {
+    //         localStorage.setItem(checkbox[i].name, checkbox[i].value); // <-- stores a value
+    //       } else {
+    //         if (localStorage.getItem(checkbox[i].name)) { // <-- check for existance
+    //           localStorage.removeItem(checkbox[i].name); // <-- remove a value
+    //         }
+    //       }
+    //     }
+    //   }
 
     let $alDel = document.createElement('button'),
         $alTrashIco = document.createElement('i')
-    // $alTrashIco.classList.add('fa-solid', 'fa-trash-can')
     $alDel.classList.add('alarm__delete')
     $alDel.addEventListener('click', e => alDelete(e))
     $alDel.append($alTrashIco)
@@ -110,9 +123,10 @@ const alCreate = (alObj) => {
     alActive.append($alSubContainer)
 }
 
+
+
 let add = () => {
     let parsedArr = JSON.parse(localStorage.getItem('alarms'))
-        // inp = document.getElementById('')
 
     parsedArr.forEach(e => {
         let alObj = {}
@@ -125,7 +139,7 @@ let add = () => {
 }
 
 let alIdRandom = () => {
-    alIndex += +(((Math.random() * 100)).toFixed(3).replace('.', ''))
+    alIndex += +(((Math.random() * 1000)).toFixed(1).replace('.', ''))
 }
 
 alSet.addEventListener('click', () => {
@@ -142,14 +156,16 @@ alSet.addEventListener('click', () => {
     alHourInp.value = appendZero(initHour)
     alMinInp.value = appendZero(initMin)
     console.log(alArray)
+    console.log(document.querySelectorAll('.checked'))
 })
+
+
 
 const alStart = e => {
     let searchId = e.target.parentElement.getAttribute('data-id'),
         [exists, obj, index] = parseObj('id', searchId)
         if (exists) {
             alArray[index].isActive = true
-            localStorage.setItem('alarms', JSON.stringify(alArray))
         }
 }
 
@@ -157,7 +173,7 @@ const alStop = e => {
     let searchId = e.target.parentElement.getAttribute('data-id'),
         [exists, obj, index] = parseObj('id', searchId)
         if (exists) {
-            alArray[index].isActive = true
+            alArray[index].isActive = false
             alSound.pause()
         }
 }
@@ -171,8 +187,6 @@ const alDelete = e => {
             localStorage.setItem('alarms', JSON.stringify(alArray))
         }
 }
-
-console.log(alArray)
 
 window.onload = () => {
     setInterval(timer)
