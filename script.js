@@ -186,7 +186,7 @@ const alDelete = e => {
             alArray.splice(index, 1)
             localStorage.setItem('alarms', JSON.stringify(alArray))
         }
-}
+};
 
 window.onload = () => {
     setInterval(timer)
@@ -198,4 +198,4 @@ window.onload = () => {
     console.log(alArray)
     alHourInp.value = appendZero(initHour)
     alMinInp.value = appendZero(initMin)
-}
+};
